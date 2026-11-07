@@ -1,0 +1,10 @@
+{
+  "hakari_jackpot": {
+    "sounds": [
+      {
+        "name": "linggango_easy_parry:hakari_jackpot",
+        "stream": true
+      }
+    ]
+  }
+}

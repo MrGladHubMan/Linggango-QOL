@@ -1,0 +1,9 @@
+build/
+.updates/
+*.class
+
+# local pack tweaking scripts / notes
+apply_changes.ps1
+restore_backups.ps1
+revert_to_original.ps1
+VIDEO_EDITING_NOTES.md

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "order": 20,
+  "size": 2,
+  "operation": "SET",
+  "add_cosmetic": true,
+  "icon": "curios:slot/empty_curio_slot",
+  "validators": [
+    "curios:all",
+    "curios:tag",
+    "linggango_easy_parry:any_accessory"
+  ]
+}

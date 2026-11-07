@@ -1,0 +1,43 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+issueTrackerURL="https://github.com/MrGladHubMan/Linggango-QOL/issues"
+
+[[mods]]
+modId="linggango_easy_parry"
+version="1.1.0"
+displayName="Linggango QOL"
+displayURL="https://github.com/MrGladHubMan/Linggango-QOL"
+authors="MrGladHubMan"
+description='''
+Quality of life add-on for the Linggango modpack. Press O in game for the menu.
+Easier parrying, extra accessory slots, Return by Death, Hakari jackpot mode, item magnet.
+'''
+
+[[dependencies.linggango_easy_parry]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.linggango_easy_parry]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.linggango_easy_parry]]
+    modId="linggango_tweaks"
+    mandatory=true
+    versionRange="[1.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.linggango_easy_parry]]
+    modId="curios"
+    mandatory=true
+    versionRange="[5.0,)"
+    ordering="AFTER"
+    side="BOTH"
