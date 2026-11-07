@@ -11,18 +11,25 @@ param(
     [switch]$NoPush
 )
 
-$ErrorActionPreference = 'Stop'
+# git prints progress on stderr, so don't treat that as a failure; check exit codes instead
+$ErrorActionPreference = 'Continue'
 $root = $PSScriptRoot
 $rawBase = 'https://raw.githubusercontent.com/MrGladHubMan/Linggango-QOL/updates'
 $wt = "$root\.updates"
 
+function Run-Git { git.exe @args 2>&1 | ForEach-Object { "$_" }; if ($LASTEXITCODE -ne 0) { throw "git $args failed" } }
+
 if (-not (Test-Path "$wt\.git")) {
-    git -C $root fetch origin updates 2>$null
-    if ($LASTEXITCODE -eq 0) { git -C $root worktree add $wt updates }
-    else { git -C $root worktree add --orphan -b updates $wt }
+    if (git.exe -C $root ls-remote --heads origin updates) {
+        Run-Git -C $root fetch origin updates
+        Run-Git -C $root worktree add $wt updates
+    } else {
+        Run-Git -C $root worktree add --orphan -b updates $wt
+    }
 }
 
 $jar = & "$root\build.ps1" -Deploy:$Deploy | Select-Object -Last 1
+if (-not $jar -or -not (Test-Path $jar)) { throw 'build failed' }
 if ((Split-Path $jar -Leaf) -notmatch '^linggango_easy_parry-(.+)\.jar$') { throw "unexpected jar name: $jar" }
 $version = $Matches[1]
 
@@ -32,18 +39,21 @@ $name = 'linggango_easy_parry.jar'
 Copy-Item -LiteralPath $jar -Destination "$wt\$name" -Force
 $sha = (Get-FileHash -Algorithm SHA256 -LiteralPath "$wt\$name").Hash.ToLower()
 
-$json = [ordered]@{
-    version   = $version
-    url       = "$rawBase/$name`?v=$version"
-    sha256    = $sha
-    changelog = $Changelog
-} | ConvertTo-Json
-[System.IO.File]::WriteAllText("$wt\update.json", $json + "`n", (New-Object System.Text.UTF8Encoding($false)))
+$log = $Changelog.Replace('\', '\\').Replace('"', '\"')
+$json = @"
+{
+  "version": "$version",
+  "url": "$rawBase/$name`?v=$version",
+  "sha256": "$sha",
+  "changelog": "$log"
+}
+"@
+[System.IO.File]::WriteAllText("$wt\update.json", $json.Replace("`r`n", "`n") + "`n", (New-Object System.Text.UTF8Encoding($false)))
 Write-Host $json
 
-git -C $wt add -A
-git -C $wt commit -m "v$version"
+Run-Git -C $wt add -A
+Run-Git -C $wt commit -m "v$version"
 if (-not $NoPush) {
-    git -C $wt push -u origin updates
+    Run-Git -C $wt push -u origin updates
     Write-Host "v$version is live"
 }
